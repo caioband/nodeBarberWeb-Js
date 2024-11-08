@@ -1,0 +1,25 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start": "node src/server",
+    "dev": "nodemon src/server"
+ 
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^5.21.1",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.21.1"
+  }
+}
