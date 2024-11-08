@@ -10,6 +10,48 @@ const produto = express();
 produto.use(express.json());
 //usuario
 
+async function ProccessLogin(req){
+    let result_usuario_email = await E.Exception(async function() {
+        const sla = await prisma.usuario.findFirst({
+            where:{
+                email: req.body.user,
+            }
+        })
+        if (sla === null){
+            throw {code: 'P2025'}
+        }
+
+        return sla
+    })
+    console.log(result_usuario_email.statusCode)
+    
+    if (result_usuario_email.statusCode === 404) {
+        return false
+    }else{
+        let result_usuario_login_final = await E.Exception(async function() {
+            if (result_usuario_email.statusCode === 200) {
+                const sla = await prisma.usuario.findFirst({
+                    where:{
+                        email: req.body.user,
+                        senha: req.body.senha
+                    }
+                })
+                if (sla === null){
+                    throw {code: 'P2025'}
+                }
+        
+                return sla
+            }
+        })
+
+        console.log(result_usuario_login_final.statusCode)
+        
+        if (result_usuario_login_final.statusCode === 200){
+            return true
+        }
+    }
+}
+
 const app = express();
 
 app.use(express.json());
@@ -57,6 +99,18 @@ app.get("/usuarios", async (req, res) => {
     res.status(200).json(users)
 })
 
+app.post("/login",async(req,res)=>{
+
+    const LoginReq = await ProccessLogin(req)
+    
+    if (LoginReq === true){
+        res.status(200).json({"message": "login efetuado com sucesso"})
+        
+    }else{
+        res.status(404).json({"message": "Credenciais inexistentes"})
+    }
+})
+
 app.get("/usuarios/:id",async(req,res)=>{
 
     let result = await E.Exception(async function(){
@@ -82,8 +136,6 @@ app.get("/usuarios/:id",async(req,res)=>{
         res.status(200).json(result.data)
     }
 
-    
-    
 })
 
 app.put("/usuarios/:id", async (req, res) => {
